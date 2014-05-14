@@ -127,70 +127,44 @@ public:
     /**
      * If p is outside of the rectangle's current bounds, expand it to include p.
      */
-    int expandByPoint(lua_State *L)
+    void expandByPoint(Point *pt)
     {
-        lua_rawgeti(L, 2, (int)Point::xOrdinal);
-        lua_rawgeti(L, 2, (int)Point::yOrdinal);
-
-        float px = (float)lua_tonumber(L, -2);
-        float py = (float)lua_tonumber(L, -1);
-
-        lua_pop(L, 2);
-
         float minX = x;
         float maxX = x + width;
         float minY = y;
         float maxY = y + height;
 
-        if (px < minX) { minX = px; }
-        if (px > maxX) { maxX = px; }
-        if (py < minY) { minY = py; }
-        if (py > maxY) { maxY = py; }
+        if (pt->x < minX) { minX = pt->x; }
+        if (pt->x > maxX) { maxX = pt->x; }
+        if (pt->y < minY) { minY = pt->y; }
+        if (pt->y > maxY) { maxY = pt->y; }
 
         x      = minX;
         width  = maxX - minX;
         y      = minY;
         height = maxY - minY;
-
-        return 0;
     }
 
     /**
      * Returns true if p is inside the bounds of this rectangle.
      */
-    int containsPoint(lua_State *L)
+    bool containsPoint(Point *pt)
     {
-        lua_rawgeti(L, 2, (int)Point::xOrdinal);
-        lua_rawgeti(L, 2, (int)Point::yOrdinal);
-
-        float px = (float)lua_tonumber(L, -2);
-        float py = (float)lua_tonumber(L, -1);
-
         bool result = true;
-        if ((px > (x + width)) || (px < x)) { result = false; }
-        else if ((py > (y + height)) || (py < y)) { result = false; }
-
-        lua_pushboolean(L, result ? 1 : 0);
-
-        return 1;
+        if ((pt->x > (x + width)) || (pt->x < x)) { result = false; }
+        else if ((pt->y > (y + height)) || (pt->y < y)) { result = false; }
+        return result;
     }
 
     /**
      * Returns true if x, y is inside the bounds of this rectangle.
      */
-    int contains(lua_State *L)
+    bool contains(float px, float py)
     {
-        float px = (float)lua_tonumber(L, 2);
-        float py = (float)lua_tonumber(L, 3);
-
         bool result = true;
-
         if ((px > (x + width)) || (px < x)) { result = false; }
         else if ((py > (y + height)) || (py < y)) { result = false; }
-
-        lua_pushboolean(L, result ? 1 : 0);
-
-        return 1;
+        return result;
     }
 
     /**

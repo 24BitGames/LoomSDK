@@ -62,13 +62,17 @@ public:
 
 bool Loom2DNative::sInitialized = false;
 
+static Point *StaticPointConstructor(lua_State *L)
+{
+    return new Point((float)lua_tonumber(L, 2), (float)lua_tonumber(L, 3));
+}
+
 static Matrix *StaticMatrixConstructor(lua_State *L)
 {
     return new Matrix((float)lua_tonumber(L, 2), (float)lua_tonumber(L, 3),
                       (float)lua_tonumber(L, 4), (float)lua_tonumber(L, 5),
                       (float)lua_tonumber(L, 6), (float)lua_tonumber(L, 7));
 }
-
 
 static Rectangle *StaticRectangleConstructor(lua_State *L)
 {
@@ -88,6 +92,43 @@ static int registerLoom2D(lua_State *L)
        .endPackage();
 
     beginPackage(L, "loom2d.math")
+
+       .beginClass<Point>("Point")
+
+       .addStaticConstructor(StaticPointConstructor)
+
+       .addVar("x", &Point::x)
+       .addVar("y", &Point::y)
+
+       .addProperty("length", &Point::get_length)
+       .addProperty("lengthSquared", &Point::get_lengthSquared)
+
+       .addStaticMethod("__op_assignment", &Point::opAssignment)
+       .addStaticMethod("__op_plus", &Point::opPlus)
+       .addStaticMethod("__op_minus", &Point::opMinus)
+       .addMethod("__op_plusassignment", &Point::opPlusAssignment)
+       .addMethod("__op_minusassignment", &Point::opMinusAssignment)
+       .addMethod("__op_multiplyassignment", &Point::opMultiplyAssignment)
+       .addMethod("__op_divideassignment", &Point::opDivideAssignment)
+
+       .addMethod("clone", &Point::clone)
+       .addMethod("toString", &Point::toString)
+       .addMethod("equals", &Point::equals)
+       .addMethod("distanceToLineSegment", &Point::distanceToLineSegment)
+       .addMethod("distanceSquaredToLineSegment", &Point::distanceSquaredToLineSegment)
+       .addMethod("normalize", &Point::normalize)
+       .addMethod("offset", &Point::offset)
+       .addMethod("scale", &Point::scale)
+       .addMethod("add", &Point::add)
+       .addMethod("subtract", &Point::subtract)
+
+       .addStaticMethod("distanceSquared", &Point::distanceSquared)
+       .addStaticMethod("distance", &Point::distance)
+       .addStaticMethod("dot", &Point::dot)
+       .addStaticMethod("interpolate", &Point::interpolate)
+       .addStaticMethod("polar", &Point::polar)
+
+       .endClass()
 
        .beginClass<Matrix>("Matrix")
 
@@ -111,8 +152,8 @@ static int registerLoom2D(lua_State *L)
        .addMethod("translate", &Matrix::translate)
        .addMethod("scale", &Matrix::scale)
        .addMethod("rotate", &Matrix::rotate)
-
-       .addLuaFunction("transformCoord", &Matrix::transformCoord)
+       .addMethod("transformCoord", &Matrix::transformCoord)
+       
        .addLuaFunction("setTo", &Matrix::setTo)
        .addLuaFunction("copyFrom", &Matrix::copyFrom)
 
@@ -139,9 +180,9 @@ static int registerLoom2D(lua_State *L)
        .addMethod("__pget_left", &Rectangle::getLeft)
        .addMethod("__pget_right", &Rectangle::getRight)
 
-       .addLuaFunction("expandByPoint", &Rectangle::expandByPoint)
-       .addLuaFunction("containsPoint", &Rectangle::containsPoint)
-       .addLuaFunction("contains", &Rectangle::contains)
+       .addMethod("expandByPoint", &Rectangle::expandByPoint)
+       .addMethod("containsPoint", &Rectangle::containsPoint)
+       .addMethod("contains", &Rectangle::contains)
 
        .addMethod("setTo", &Rectangle::setTo)
 
@@ -261,6 +302,7 @@ void installLoom2D()
     LOOM_DECLARE_NATIVETYPE(Loom2D::Loom2DNative, Loom2D::registerLoom2D);
 
     LOOM_DECLARE_NATIVETYPE(Loom2D::Rectangle, Loom2D::registerLoom2D);
+    LOOM_DECLARE_NATIVETYPE(Loom2D::Point, Loom2D::registerLoom2D);
     LOOM_DECLARE_NATIVETYPE(Loom2D::Matrix, Loom2D::registerLoom2D);
 
     LOOM_DECLARE_MANAGEDNATIVETYPE(Loom2D::EventDispatcher, Loom2D::registerLoom2D);

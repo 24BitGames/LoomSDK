@@ -23,5 +23,5 @@
 namespace Loom2D
 {
 Type       *Matrix::typeMatrix         = NULL;
-lua_Number Matrix::sHelperPointOrdinal = -1;
+Point      Matrix::tempPoint            = Point(0.0f, 0.0f);
 }

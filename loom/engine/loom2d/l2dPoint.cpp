@@ -27,4 +27,6 @@ Type *Point::typePoint = NULL;
 
 lua_Number Point::xOrdinal = -1;
 lua_Number Point::yOrdinal = -1;
+
+Point Point::tempPoint = Point(0.0f, 0.0f);
 }

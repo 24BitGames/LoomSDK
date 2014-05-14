@@ -7,9 +7,6 @@ package loom2d.math
      */
     final public native class Matrix 
     {
-
-        private static var sHelperPoint:Point;
-
         public native function set a(value:float);
         public native function get a():float;
 

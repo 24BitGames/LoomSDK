@@ -32,7 +32,6 @@ class Matrix
 private:
 
     static Type       *typeMatrix;
-    static lua_Number sHelperPointOrdinal;
 
 public:
 
@@ -43,6 +42,10 @@ public:
 
     float tx;
     float ty;
+
+    static Point      tempPoint;
+
+
 
     Matrix(float _a = 1.0f, float _b = 0.0f, float _c = 0.0f, float _d = 1.0f, float _tx = 0.0f, float _ty = 0.0f)
     {
@@ -251,21 +254,11 @@ public:
         this->ty = -(this->b * tx + this->d * ty);
     }
 
-    int transformCoord(lua_State *L)
+    Point transformCoord(float x, float y)
     {
-        float x = (float)lua_tonumber(L, 2);
-        float y = (float)lua_tonumber(L, 3);
-
-        // get the helper point
-        lua_pushnumber(L, sHelperPointOrdinal);
-        lua_gettable(L, 1);
-
-        lua_pushnumber(L, a * x + c * y + tx);
-        lua_rawseti(L, 4, (int)Point::xOrdinal);
-        lua_pushnumber(L, b * x + d * y + ty);
-        lua_rawseti(L, 4, (int)Point::yOrdinal);
-
-        return 1;
+        tempPoint.x = a * x + c * y + tx;
+        tempPoint.y = b * x + d * y + ty;
+        return tempPoint;
     }
 
     inline void copyFrom(const Matrix *other)
@@ -319,7 +312,6 @@ public:
     {
         typeMatrix = LSLuaState::getLuaState(L)->getType("loom2d.math.Matrix");
         lmAssert(typeMatrix, "unable to get loom2d.math.Matrix type");
-        sHelperPointOrdinal = typeMatrix->getMemberOrdinal("sHelperPoint");
     }
 };
 }
