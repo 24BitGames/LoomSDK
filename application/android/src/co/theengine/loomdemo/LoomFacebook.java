@@ -20,6 +20,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 
@@ -53,6 +55,15 @@ public class LoomFacebook {
 	public static String getAccessToken() {
 		return Session.getActiveSession().getAccessToken();
 	}
+	
+	//GW - For DoubleDoodle - returns expiry date formatted specifically for Parse Oauth login.
+	public static String getExpirationDate() {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		Session session = Session.getActiveSession();
+		String returnString = df.format(session.getExpirationDate());
+		return returnString;
+	}
+
 
 	// Internal use
 	public static void onCreate(LoomDemo loomDemo, Bundle savedInstanceState) {

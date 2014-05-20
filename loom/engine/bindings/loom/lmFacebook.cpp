@@ -79,6 +79,22 @@ public:
 #endif
         return accessToken.c_str();
     }
+	
+	static const char* getExpirationDate()
+    {
+        static utString expirationDate;
+#if LOOM_PLATFORM == LOOM_PLATFORM_ANDROID
+        loomJniMethodInfo methodInfo;
+        LoomJni::getStaticMethodInfo(   methodInfo,
+                                        "co/theengine/loomdemo/LoomFacebook",
+                                        "getExpirationDate",
+                                        "()Ljava/lang/String;");
+        jstring expirationDateString = (jstring)methodInfo.env->CallStaticObjectMethod(methodInfo.classID, methodInfo.methodID);
+        expirationDate = LoomJni::jstring2string(expirationDateString);
+        methodInfo.env->DeleteLocalRef(expirationDateString);
+#endif
+        return expirationDate.c_str();
+    }
 };
 
 NativeDelegate Facebook::_OnSessionStatusDelegate;
@@ -113,6 +129,7 @@ static int registerLoomFacebook(lua_State* L)
         .addStaticMethod("requestNewPublishPermissions", &Facebook::requestNewPublishPermissions)
         .addStaticMethod("getAccessToken", &Facebook::getAccessToken)
         .addStaticProperty("onSessionStatus", &Facebook::getOnSessionStatusDelegate)
+		.addStaticMethod("getExpirationDate", &Facebook::getExpirationDate)
     .endClass()
 
     .endPackage();

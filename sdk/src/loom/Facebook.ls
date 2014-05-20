@@ -29,5 +29,10 @@ package Loom
          * Get the access token for the current Facebook user, or null.
          */
          public static native function getAccessToken():String;
+
+        /**
+        * GW - Get the expiry time for our session
+        */
+        public static native function getExpirationDate():String;
     }
 }
