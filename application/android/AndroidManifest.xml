@@ -32,8 +32,8 @@
       IMPORTANT: Change "co.theengine.loomdemo.permission.C2D_MESSAGE" in the lines below
       to match your app's package name + ".permission.C2D_MESSAGE".
     -->
-    <permission android:protectionLevel="signature" android:name="co.theengine.loomdemo.permission.C2D_MESSAGE" />
-    <uses-permission android:name="co.theengine.loomdemo.permission.C2D_MESSAGE" />
+    <permission android:protectionLevel="signature" android:name="co.theengine.DoubleDoodle.permission.C2D_MESSAGE" />
+    <uses-permission android:name="co.theengine.DoubleDoodle.permission.C2D_MESSAGE" />
     <!-- Parse Push Notifications -->
 
 
@@ -80,7 +80,7 @@
             <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
          
             <!-- IMPORTANT: Change "co.theengine.loomdemo" to match your app's package name. -->
-            <category android:name="co.theengine.loomdemo" />
+            <category android:name="co.theengine.DoubleDoodle" />
           </intent-filter>
         </receiver>
         <!-- Parse Push Notifications -->
