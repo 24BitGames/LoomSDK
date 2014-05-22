@@ -28,6 +28,7 @@ set (ENGINE_SRC
     bindings/loom/lmStore.cpp
     bindings/loom/lmVideo.cpp
     bindings/loom/lmMobile.cpp
+    bindings/loom/lmParse.cpp
     bindings/loom/lmPackageLoom.cpp
     bindings/loom/lmCarrot.cpp
     bindings/loom/lmFacebook.cpp
