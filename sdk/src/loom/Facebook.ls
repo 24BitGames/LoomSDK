@@ -31,8 +31,13 @@ package Loom
          public static native function getAccessToken():String;
 
         /**
-        * GW - Get the expiry time for our session
+        * Get the expiry time for our session with the provided date format
         */
-        public static native function getExpirationDate():String;
+        public static native function getExpirationDate(dateFormat:String):String;
+		
+		/**
+         * Show a frictionless app request dialog.
+         */
+        public static native function showFrictionlessRequestDialog(recipients:String, title:String, message:String):Boolean;
     }
 }
