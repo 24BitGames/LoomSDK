@@ -111,6 +111,8 @@ if (APPLE)
           "-framework OpenGLES"
           "-framework StoreKit"
           "-framework Security"
+          "-framework Social"
+          "-framework Accounts"
           "-framework QuartzCore"
           "-framework MobileCoreServices"
           "-framework OpenGLES"
@@ -124,9 +126,13 @@ if (APPLE)
           "-framework AudioToolbox"
           "-framework CoreAudio"
 
-          # Parse
-#TODO: Parse requires Facebook on iOS... weeeee!!!!          
-          # "-framework Parse -F ${CMAKE_SOURCE_DIR}/loom/vendor/parse"
+          # Custom Vendors
+
+          # Facebook
+          "-framework FacebookSDK -F ${CMAKE_SOURCE_DIR}/loom/vendor/facebook/ios"
+
+          # Parse (NOTE: Requires FacebookSDK on iOS!)
+          "-framework Parse -F ${CMAKE_SOURCE_DIR}/loom/vendor/parse/ios"
 
           # Admob SDK
           ${CMAKE_SOURCE_DIR}/loom/vendor/admob/lib/ios/libGoogleAdMobAds.a
