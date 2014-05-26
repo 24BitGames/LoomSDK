@@ -45,10 +45,14 @@
         android:icon="@drawable/icon"
         android:name="co.theengine.loomdemo.LoomApplication">
 
+        <!-- set up metadata for external libraries -->
         <meta-data android:name="com.gocarrot.CarrotAppSecret" android:value="@string/carrotAppSecret"/>
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebookApplicationId"/>
+
+
         <activity android:name=".LoomDemo"
                   android:label="@string/app_name"
+                  android:exported="true"
                   android:screenOrientation="landscape"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
                   android:configChanges="orientation">
@@ -56,6 +60,18 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Ability to auto-launch app via web browser on device -->
+            <!-- NOTE: Cannot use @string to define data in <intent-filter>s :( -->
+            <intent-filter>
+                <data
+                    android:scheme="http"
+                    android:host="play.dd"
+                />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>  
         </activity>
 
         <activity android:name="com.google.ads.AdActivity"

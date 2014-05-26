@@ -38,5 +38,16 @@
     <string>EUl1VhYqZ2bWjkiGNUTWABoJD6eGHVUboB9taPvC</string>
     <key>ParseClientKeyString</key>
     <string>17pJDP3YV6kA0mxoS7YfEcdrrEC9kQ82iEbJ8OYT</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>playdd</string>
+            </array>
+            <key>CFBundleURLName</key>
+            <string>co.theengine.DoubleDoodle</string>
+        </dict>
+    </array>
 </dict>
 </plist>
