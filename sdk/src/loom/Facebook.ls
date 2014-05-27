@@ -30,7 +30,13 @@ package Loom
          */
          public static native function getAccessToken():String;
 
-        /**
+        		
+		/**
+        * Close our session and purge cached tokens and user data
+        */
+        public static native function closeAndClearTokenInformation();
+		
+		/**
         * Get the expiry time for our session with the provided date format
         */
         public static native function getExpirationDate(dateFormat:String):String;

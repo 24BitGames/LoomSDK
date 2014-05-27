@@ -104,6 +104,13 @@ public class LoomFacebook {
 
 	}
 	
+	public static void closeAndClearTokenInformation()
+	{
+		Session session = Session.getActiveSession();
+		session.closeAndClearTokenInformation();
+	
+	}
+	
 	public static String getExpirationDate(String dateFormat) {
 		String returnString;
 		Session session = Session.getActiveSession();

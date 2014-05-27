@@ -101,6 +101,19 @@ public:
         return accessToken.c_str();
     }
 	
+	static void closeAndClearTokenInformation()
+	{
+#if LOOM_PLATFORM == LOOM_PLATFORM_ANDROID
+        loomJniMethodInfo methodInfo;
+        LoomJni::getStaticMethodInfo(   methodInfo,
+                                        "co/theengine/loomdemo/LoomFacebook",
+                                        "closeAndClearTokenInformation",
+                                        "()V");        
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID); 
+#endif
+	
+	}
+	
 	static const char* getExpirationDate(const char* dateFormat)
     {
         static utString expirationDate;
@@ -152,7 +165,8 @@ static int registerLoomFacebook(lua_State* L)
         .addStaticMethod("showFrictionlessRequestDialog", &Facebook::showFrictionlessRequestDialog)
         .addStaticMethod("getAccessToken", &Facebook::getAccessToken)
         .addStaticMethod("getExpirationDate", &Facebook::getExpirationDate)
-		.addStaticProperty("onSessionStatus", &Facebook::getOnSessionStatusDelegate)
+		.addStaticProperty("onSessionStatus", &Facebook::getOnSessionStatusDelegate)		
+		.addStaticMethod("closeAndClearTokenInformation", &Facebook::closeAndClearTokenInformation)
     .endClass()
 
     .endPackage();
