@@ -65,8 +65,8 @@
             <!-- NOTE: Cannot use @string to define data in <intent-filter>s :( -->
             <intent-filter>
                 <data
-                    android:scheme="http"
-                    android:host="play.dd"
+                    android:scheme="playdd"
+                    android:host="right.now"
                 />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
