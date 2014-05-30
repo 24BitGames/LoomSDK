@@ -30,6 +30,7 @@
 #import "RootViewController.h"
 
 #include "loom/engine/bindings/loom/lmApplication.h"
+#include "loom/common/platform/platformMobileiOS.h"
 
 
 static void handleGenericEvent(void *userData, const char *type, const char *payload)
@@ -86,10 +87,46 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
     parse = [[ParseAPIiOS alloc] init];
     [parse initialize];
 
+    // handle custom URL Scheme launch options
+    NSURL *urlToParse = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
+    if(urlToParse) 
+    {
+        [self application:application handleOpenURL:urlToParse];
+    } 
+
     cocos2d::CCApplication::sharedApplication().run();
     
     return YES;
 }
+
+// called when the application is opened via a Custom URL Scheme
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    NSString *queryString = [url query];
+    // NSLog(@"---------Open URL Query String: %@", queryString);
+
+    // build a dictionary and store the Open URU query there in key/data pairs
+    gOpenUrlQueryStringDictionary = nil;
+    if(queryString)
+    {
+        gOpenUrlQueryStringDictionary = [[NSMutableDictionary alloc] init];
+        NSArray *queryComponents = [queryString componentsSeparatedByString:@"&"];
+        for (NSString *keyValuePair in queryComponents)
+        {
+            NSArray *pairComponents = [keyValuePair componentsSeparatedByString:@"="];
+            if((pairComponents != nil) && ([pairComponents count] == 2))
+            {
+                NSString *key = [pairComponents objectAtIndex:0];
+                NSString *value = [pairComponents objectAtIndex:1];
+                [gOpenUrlQueryStringDictionary setObject:value forKey:key];
+            }
+        }
+    }
+
+    return YES;
+}
+
+
 
 
 - (void)applicationWillResignActive:(UIApplication *)application {

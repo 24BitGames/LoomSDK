@@ -61,6 +61,7 @@ void Java_co_theengine_loomdemo_LoomSensors_onGravityChangedNative(JNIEnv *env, 
 static loomJniMethodInfo gVibrate;
 static loomJniMethodInfo gAllowScreenSleep;
 static loomJniMethodInfo gShareText;
+static loomJniMethodInfo gGetCustomSchemeData;
 static loomJniMethodInfo gIsSensorSupported;
 static loomJniMethodInfo gIsSensorEnabled;
 static loomJniMethodInfo gHasSensorReceivedData;
@@ -98,6 +99,11 @@ void platform_mobileInitialize(SensorTripleChangedCallback sensorTripleChangedCB
                                  "co/theengine/loomdemo/LoomMobile",
                                  "shareText",
                                  "(Ljava/lang/String;Ljava/lang/String;)Z");
+    LoomJni::getStaticMethodInfo(gGetCustomSchemeData,
+                                 "co/theengine/loomdemo/LoomMobile",
+                                 "getCustomSchemeQueryData",
+                                 "(Ljava/lang/String;)Ljava/lang/String;");
+
     LoomJni::getStaticMethodInfo(gIsSensorSupported,
                                  "co/theengine/loomdemo/LoomSensors",
                                  "isSensorSupported",
@@ -174,6 +180,25 @@ bool platform_shareText(const char *subject, const char *text)
     gShareText.env->DeleteLocalRef(jText);
     return (bool)result;
 }
+
+///gets the the specified query key data from any custom scheme URL path that the application was launched with, or "" if not found
+const char *platform_getOpenURLQueryData(const char *queryKey)
+{
+    jstring jQuery = gGetCustomSchemeData.env->NewStringUTF(queryKey);
+    jstring result = (jstring)gGetCustomSchemeData.env->CallStaticObjectMethod(gGetCustomSchemeData.classID, 
+                                                                                gGetCustomSchemeData.methodID,
+                                                                                jQuery);
+    if(result == NULL)
+    {
+        return "";
+    }
+    ///convert jstring result into const char* for us to return
+    cocos2d::CCString *queryData = new cocos2d::CCString(LoomJni::jstring2string(result).c_str());
+    queryData->autorelease();
+    gGetCustomSchemeData.env->DeleteLocalRef(jQuery);
+    return queryData->m_sString.c_str();
+}
+
 
 ///checks if a given sensor is supported on this hardware
 bool platform_isSensorSupported(int sensor)
