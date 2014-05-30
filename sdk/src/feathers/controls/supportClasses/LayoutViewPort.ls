@@ -32,6 +32,8 @@ package feathers.controls.supportClasses
         private static const HELPER_BOUNDS:ViewPortBounds = new ViewPortBounds();
         private static const HELPER_LAYOUT_RESULT:LayoutBoundsResult = new LayoutBoundsResult();
 
+        public var ignoreScrollChanges = false;
+
         public function LayoutViewPort()
         {
             this.addEventListener(Event.ADDED, addedHandler);
@@ -180,7 +182,7 @@ package feathers.controls.supportClasses
                 return;
             }
             this._horizontalScrollPosition = value;
-            this.invalidate(INVALIDATION_FLAG_SCROLL);
+            if ( !ignoreScrollChanges ) this.invalidate(INVALIDATION_FLAG_SCROLL);
         }
 
         private var _verticalScrollPosition:Number = 0;
@@ -197,7 +199,7 @@ package feathers.controls.supportClasses
                 return;
             }
             this._verticalScrollPosition = value;
-            this.invalidate(INVALIDATION_FLAG_SCROLL);
+            if ( !ignoreScrollChanges ) this.invalidate(INVALIDATION_FLAG_SCROLL);
         }
 
         private var _ignoreChildChanges:Boolean = false;
@@ -273,7 +275,7 @@ package feathers.controls.supportClasses
             const sizeInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_SIZE);
             const scrollInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_SCROLL);
 
-            if(sizeInvalid || dataInvalid || scrollInvalid)
+            if(sizeInvalid || dataInvalid || ( scrollInvalid && !ignoreScrollChanges ))
             {
                 HELPER_BOUNDS.x = HELPER_BOUNDS.y = 0;
                 HELPER_BOUNDS.scrollX = this._horizontalScrollPosition;
