@@ -63,10 +63,10 @@
 
             <!-- Ability to auto-launch app via web browser on device -->
             <!-- NOTE: Cannot use @string to define data in <intent-filter>s :( -->
-            <intent-filter>
+            
+			<intent-filter>
                 <data
-                    android:scheme="playdd"
-                    android:host="right.now"
+                    android:scheme="playdd"                 
                 />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
