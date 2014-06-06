@@ -34,6 +34,10 @@
 	<string></string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+    <key>FacebookAppID</key>
+    <string>145359302297405</string>
+    <key>FacebookDisplayName</key>
+    <string>Double Doodle Dev</string>
     <key>ParseAppIDString</key>
     <string>EUl1VhYqZ2bWjkiGNUTWABoJD6eGHVUboB9taPvC</string>
     <key>ParseClientKeyString</key>
@@ -41,12 +45,13 @@
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
+            <key>CFBundleURLName</key>
+            <string>co.theengine.DoubleDoodle</string>
             <key>CFBundleURLSchemes</key>
             <array>
                 <string>playdd</string>
+                <string>fb145359302297405</string>
             </array>
-            <key>CFBundleURLName</key>
-            <string>co.theengine.DoubleDoodle</string>
         </dict>
     </array>
 </dict>

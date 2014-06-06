@@ -184,6 +184,12 @@ bool platform_shareText(const char *subject, const char *text)
 ///gets the the specified query key data from any custom scheme URL path that the application was launched with, or "" if not found
 const char *platform_getOpenURLQueryData(const char *queryKey)
 {
+    //NOTE: have to re-request this JNI method info on the fly as we've had crashes on some devices when returning from Facebook login
+    LoomJni::getStaticMethodInfo(gGetCustomSchemeData,
+                                 "co/theengine/loomdemo/LoomMobile",
+                                 "getCustomSchemeQueryData",
+                                 "(Ljava/lang/String;)Ljava/lang/String;");
+
     jstring jQuery = gGetCustomSchemeData.env->NewStringUTF(queryKey);
     jstring result = (jstring)gGetCustomSchemeData.env->CallStaticObjectMethod(gGetCustomSchemeData.classID, 
                                                                                 gGetCustomSchemeData.methodID,
@@ -192,6 +198,7 @@ const char *platform_getOpenURLQueryData(const char *queryKey)
     {
         return "";
     }
+
     ///convert jstring result into const char* for us to return
     cocos2d::CCString *queryData = new cocos2d::CCString(LoomJni::jstring2string(result).c_str());
     queryData->autorelease();

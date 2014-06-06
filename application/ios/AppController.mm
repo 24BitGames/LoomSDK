@@ -28,6 +28,7 @@
 #import "../common/AppDelegate.h"
 
 #import "RootViewController.h"
+#import "FBAppCall.h"
 
 #include "loom/engine/bindings/loom/lmApplication.h"
 #include "loom/common/platform/platformMobileiOS.h"
@@ -87,30 +88,41 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
     parse = [[ParseAPIiOS alloc] init];
     [parse initialize];
 
-    // handle custom URL Scheme launch options
-    NSURL *urlToParse = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
-    if(urlToParse) 
-    {
-        [self application:application handleOpenURL:urlToParse];
-    } 
-
     cocos2d::CCApplication::sharedApplication().run();
     
     return YES;
 }
 
-// called when the application is opened via a Custom URL Scheme
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-    NSString *queryString = [url query];
-    // NSLog(@"---------Open URL Query String: %@", queryString);
-
-    // build a dictionary and store the Open URU query there in key/data pairs
-    gOpenUrlQueryStringDictionary = nil;
-    if(queryString)
+    if([[sourceApplication lowercaseString] isEqualToString:@"com.facebook.facebook"])
     {
+        // handle Facebook sign in re-launching the application
+        NSLog(@"---------Facebook openURL: %@", [url absoluteString]);
+        return [FBSession.activeSession handleOpenURL:url];
+    }
+    else
+    {
+        // check for query to parse and if so, do it!
+        NSString *queryString = [url query];
+        if(queryString)
+        {
+            [self application:application handleOpenURLQuery:queryString];
+        }
+    }
+}
+
+// called when the application is opened via a Custom URL Scheme
+- (void)application:(UIApplication *)application handleOpenURLQuery:(NSString *)query
+{
+    gOpenUrlQueryStringDictionary = nil;
+    if(query)
+    {
+        // build a dictionary and store the Open URL query there in key/data pairs
+        NSLog(@"---------Open URL Query String: %@", query);
+
         gOpenUrlQueryStringDictionary = [[NSMutableDictionary alloc] init];
-        NSArray *queryComponents = [queryString componentsSeparatedByString:@"&"];
+        NSArray *queryComponents = [query componentsSeparatedByString:@"&"];
         for (NSString *keyValuePair in queryComponents)
         {
             NSArray *pairComponents = [keyValuePair componentsSeparatedByString:@"="];
@@ -122,8 +134,6 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
             }
         }
     }
-
-    return YES;
 }
 
 
@@ -142,6 +152,12 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
      Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
      */
     cocos2d::CCDirector::sharedDirector()->resume();
+
+
+    // Handle the user leaving the app while the Facebook login dialog is being shown
+    // For example: when the user presses the iOS "home" button while the login dialog is active
+    NSLog(@"---------Application Did Become Active: Notifying Facebook");
+    [FBAppCall handleDidBecomeActive];    
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
