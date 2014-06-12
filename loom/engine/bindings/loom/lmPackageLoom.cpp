@@ -34,6 +34,7 @@ void installLoom2D();
 void installPackageLoomSound();
 void installLoomFacebook();
 void installLoomTeak();
+void installLoomParse();
 
 void installPackageLoom()
 {
@@ -49,6 +50,7 @@ void installPackageLoom()
     installLoomMobile();
     installLoomFacebook();
     installLoomTeak();
+    installLoomParse();
     installPackageLoomSound();
 
     // Should be its own package for maximum correctness.
