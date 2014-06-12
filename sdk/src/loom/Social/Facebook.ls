@@ -83,7 +83,7 @@ package loom.social
 
         /**
          * Open a Facebook session with read permissions.
-         *  @param permissions String defining the Facebook permissions (comma separated) you wish to publish via (ie. "email,user_friends")
+         *  @param permissions String defining the Facebook permissions (comma separated) you wish to publish via (ie. "publish_actions")
          *  @return false if the there is no Facebook Application Id defined, or session has not been opened yet, true otherwise.
          */
         public static native function requestNewPublishPermissions(permissions:String):Boolean;
