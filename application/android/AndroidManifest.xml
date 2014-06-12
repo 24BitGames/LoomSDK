@@ -11,9 +11,6 @@
                       android:anyDensity="true"
                       android:normalScreens="true"/>
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
@@ -24,7 +21,6 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
-
 
     <!-- Parse Push Notifications -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -40,15 +36,17 @@
     <!-- Parse Push Notifications -->
 
 
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <application android:label="@string/app_name"
         android:debuggable="true"
         android:icon="@drawable/icon"
         android:name="co.theengine.loomdemo.LoomApplication">
 
-        <!-- set up metadata for external libraries -->
-        <meta-data android:name="com.gocarrot.CarrotAppSecret" android:value="@string/carrotAppSecret"/>
+<!-- TODO: remove @string and use direct value here? easier to set from the CLI likely! -->
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebookApplicationId"/>
-
+        <meta-data android:name="com.teak.AppSecret" android:value="@string/teakAppSecret"/>
 
         <activity android:name=".LoomDemo"
                   android:label="@string/app_name"
@@ -62,9 +60,7 @@
             </intent-filter>
 
             <!-- Ability to auto-launch app via web browser on device -->
-            <!-- NOTE: Cannot use @string to define data in <intent-filter>s :( -->
-            
-			<intent-filter>
+            <intent-filter>
                 <data
                     android:scheme="playdd"                 
                 />
@@ -72,16 +68,12 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>  
+
         </activity>
 
         <activity android:name="com.google.ads.AdActivity"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
 
-        <!-- For Facebook Login. -->
-        <activity android:name="com.facebook.LoginActivity"
-                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                  android:label="@string/app_name" />
-                  
         <!-- Parse Push Notifications -->
         <service android:name="com.parse.PushService" />
         <receiver android:name="com.parse.ParseBroadcastReceiver">
@@ -102,6 +94,18 @@
         </receiver>
         <!-- Parse Push Notifications -->
 
+        <!-- For Facebook Login. -->
+        <activity android:name="com.facebook.LoginActivity"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:label="@string/app_name" />
+
+        <!-- Required for Teak -->
+        <service android:name="org.openudid.OpenUDID_service">
+            <intent-filter>
+                <action android:name="org.openudid.GETUDID" />
+            </intent-filter>
+        </service>                  
+                  
     </application>
     
 </manifest> 

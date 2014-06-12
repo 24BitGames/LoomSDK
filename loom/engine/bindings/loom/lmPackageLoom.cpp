@@ -29,15 +29,11 @@ void installLoomHTTPRequest();
 void installLoomNativeStore();
 void installLoomVideo();
 void installLoomMobile();
-void installLoomParse();
 void installLoomGraphics();
 void installLoom2D();
 void installPackageLoomSound();
-
-//SOCIALTODO: LFL: likely move over to new Teak API eventually
-void installLoomCarrot();
-//GW: Facebook only has Android support too. To be investigated.
 void installLoomFacebook();
+void installLoomTeak();
 
 void installPackageLoom()
 {
@@ -51,7 +47,8 @@ void installPackageLoom()
     installLoomNativeStore();
     installLoomVideo();
     installLoomMobile();
-    installLoomParse();
+    installLoomFacebook();
+    installLoomTeak();
     installPackageLoomSound();
 
     // Should be its own package for maximum correctness.
@@ -59,10 +56,4 @@ void installPackageLoom()
 
     installLoomGraphics();
     installLoom2D();
-
-//SOCIALTODO: LFL: likely move over to new Teak API eventually
-    installLoomCarrot();
-
-//GW: Facebook only has Android support too. To be investigated.
-    installLoomFacebook();
 }
