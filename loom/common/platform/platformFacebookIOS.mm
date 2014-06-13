@@ -128,7 +128,10 @@ static FBFrictionlessRecipientCache* gFriendCache = NULL;
         }
 
         NSLog(@"----FBStatusCallback errorCode: %d", errorCode);
-        gSessionStatusCallback(0, "", errorCode);
+        if(gSessionStatusCallback != NULL)
+        {
+            gSessionStatusCallback(0, "", errorCode);
+        }
         return;
     }
 
@@ -172,7 +175,10 @@ static FBFrictionlessRecipientCache* gFriendCache = NULL;
     
     //do native callback
     NSLog(@"----FBStatusCallback state: %i   permissions: %s", sessionState, permissionsStatic);
-    gSessionStatusCallback(sessionState, permissionsStatic, 0);
+    if(gSessionStatusCallback != NULL)
+    {
+        gSessionStatusCallback(sessionState, permissionsStatic, 0);
+    }
 }
 
 @end
