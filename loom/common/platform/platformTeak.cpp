@@ -29,6 +29,10 @@ void platform_teakInitialize(AuthStatusCallback authStatusCB)
 {
 }
 
+bool platform_isTeakActive()
+{
+}
+
 void platform_setAccessToken(const char *fbAccessToken)
 {
 }
