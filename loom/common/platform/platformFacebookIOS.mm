@@ -209,9 +209,8 @@ void platform_facebookInitialize(SessionStatusCallback sessionStatusCB)
 
      //don't initialize without valid strings
     _initialized = false;
-    if([app_id isEqualToString:@""] == FALSE)
+    if((app_id != nil) && ([app_id isEqualToString:@""] == FALSE))
     {
-        _initialized = true;
         _facebookAppID = [app_id cStringUsingEncoding:NSUTF8StringEncoding];
 
         //see if session exists first
@@ -235,7 +234,13 @@ void platform_facebookInitialize(SessionStatusCallback sessionStatusCB)
                      }];
         }
         lmLog(giOSFacebookLogGroup, "Facebook initialized successfully!!!");
+        _initialized = true;
     }
+}
+
+bool platform_isFacebookActive()
+{
+    return _initialized;
 }
 
 bool platform_openSessionWithReadPermissions(const char* permissionsString)
@@ -413,7 +418,19 @@ const char* platform_getExpirationDate(const char *dateFormat)
 
 bool platform_isPermissionGranted(const char* permission)
 {
-    ///TODO: Call the native session method to determine if this permission is granted, and return result.
+    FBSession *session = [FBSession activeSession];
+    if((session != nil) && ([session isOpen]))
+    {
+        FBAccessTokenData *tokenData = [session accessTokenData];
+        if(tokenData != nil)
+        {
+            NSArray *permissions = [tokenData permissions];
+            NSString *permissionsString = [permissions componentsJoinedByString:@" "];
+            NSString *checkingPermission = [NSString stringWithCString:permission encoding:NSUTF8StringEncoding];
+            return ([permissionsString rangeOfString:checkingPermission options:NSCaseInsensitiveSearch].location == NSNotFound) ? false : true;
+        }
+    }
+
     return false;
 }
 

@@ -132,6 +132,9 @@ public class LoomFacebook
         }
     }
 
+
+
+
 	public static boolean isPermissionGranted(String permission)
 	{
 		Session session = Session.getActiveSession();
@@ -143,6 +146,11 @@ public class LoomFacebook
 		
 	}
 
+
+    public static boolean isActive() 
+    {
+        return checkFacebookAppId(mLoomDemo);
+    }
 
 
 	public static boolean openSessionWithReadPermissions(String permissionsString) 
