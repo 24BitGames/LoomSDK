@@ -52,6 +52,7 @@ extern "C"
 }
 
 
+static loomJniMethodInfo gIsActive;
 static loomJniMethodInfo gOpenSessionReadPermissions;
 static loomJniMethodInfo gRequestNewPublishPermissions;
 static loomJniMethodInfo gFrictionlessRequestDialog;
@@ -69,6 +70,10 @@ void platform_facebookInitialize(SessionStatusCallback sessionStatusCB)
     gSessionStatusCallback = sessionStatusCB;   
  
     // Bind to JNI entry points.
+    LoomJni::getStaticMethodInfo(gIsActive,
+                                    "co/theengine/loomdemo/LoomFacebook",
+                                    "isActive",
+                                    "()Z");
     LoomJni::getStaticMethodInfo(gOpenSessionReadPermissions,
                                     "co/theengine/loomdemo/LoomFacebook",
                                     "openSessionWithReadPermissions",
@@ -97,6 +102,12 @@ void platform_facebookInitialize(SessionStatusCallback sessionStatusCB)
                                     "co/theengine/loomdemo/LoomFacebook",
                                     "isPermissionGranted",
                                     "(Ljava/lang/String;)Z");
+}
+
+
+bool platform_isActive()
+{
+    return gIsActive.env->CallStaticBooleanMethod(gIsActive.classID, gIsActive.methodID);
 }
 
 
