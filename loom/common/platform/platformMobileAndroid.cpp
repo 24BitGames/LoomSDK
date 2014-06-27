@@ -190,8 +190,8 @@ const char *platform_getOpenURLQueryData(const char *queryKey)
                                  "getCustomSchemeQueryData",
                                  "(Ljava/lang/String;)Ljava/lang/String;");
 
-    jstring jQuery = gGetCustomSchemeData.env->NewStringUTF(queryKey);
-    jstring result = (jstring)gGetCustomSchemeData.env->CallStaticObjectMethod(gGetCustomSchemeData.classID, 
+    jstring jQuery = gGetCustomSchemeData.getEnv()->NewStringUTF(queryKey);
+    jstring result = (jstring)gGetCustomSchemeData.getEnv()->CallStaticObjectMethod(gGetCustomSchemeData.classID, 
                                                                                 gGetCustomSchemeData.methodID,
                                                                                 jQuery);
     if(result == NULL)
@@ -202,7 +202,7 @@ const char *platform_getOpenURLQueryData(const char *queryKey)
     ///convert jstring result into const char* for us to return
     cocos2d::CCString *queryData = new cocos2d::CCString(LoomJni::jstring2string(result).c_str());
     queryData->autorelease();
-    gGetCustomSchemeData.env->DeleteLocalRef(jQuery);
+    gGetCustomSchemeData.getEnv()->DeleteLocalRef(jQuery);
     return queryData->m_sString.c_str();
 }
 
