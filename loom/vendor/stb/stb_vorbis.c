@@ -1166,59 +1166,54 @@ static int lookup1_values(int entries, int dim)
 // other places if further crashes result -- BJG
 static void sincos(float x, float *cosOut, float *sinOut)
 {
+    float sinTmp, cosTmp;
+    
     // Apply wrapping.
-    while(x < -3.14159265)
-        x += 6.28318531;
-    
-    while(x >  3.14159265)
-        x -= 6.28318531;
-    
+    x = (float)fmod(x + 3.14159265f, 6.28318531f) -  3.14159265f;
+
     //compute sine
-    float sinTmp;
     if (x < 0)
     {
-        sinTmp = 1.27323954 * x + .405284735 * x * x;
+        sinTmp = 1.27323954f * x + .405284735f * x * x;
         
-        if (sinTmp < 0)
-            sinTmp = .225 * (sinTmp *-sinTmp - sinTmp) + sinTmp;
+        if (sinTmp < 0.f)
+            sinTmp = .225f * (sinTmp *-sinTmp - sinTmp) + sinTmp;
         else
-            sinTmp = .225 * (sinTmp * sinTmp - sinTmp) + sinTmp;
+            sinTmp = .225f * (sinTmp * sinTmp - sinTmp) + sinTmp;
     }
     else
     {
-        sinTmp = 1.27323954 * x - 0.405284735 * x * x;
+        sinTmp = 1.27323954f * x - 0.405284735f * x * x;
         
-        if (sinTmp < 0)
-            sinTmp = .225 * (sinTmp *-sinTmp - sinTmp) + sinTmp;
+        if (sinTmp < 0.f)
+            sinTmp = .225f * (sinTmp *-sinTmp - sinTmp) + sinTmp;
         else
-            sinTmp = .225 * (sinTmp * sinTmp - sinTmp) + sinTmp;
+            sinTmp = .225f * (sinTmp * sinTmp - sinTmp) + sinTmp;
     }
     *sinOut = sinTmp;
     
     //compute cosine: sin(x + PI/2) = cos(x)
-    x += 1.57079632;
-    if (x >  3.14159265)
-        x -= 6.28318531;
+    x += 1.57079632f;
+    if (x >  3.14159265f)
+        x -= 6.28318531f;
     
-    float cosTmp;
-    
-    if (x < 0)
+    if (x < 0.f)
     {
-        cosTmp = 1.27323954 * x + 0.405284735 * x * x;
+        cosTmp = 1.27323954f * x + 0.405284735f * x * x;
         
-        if (cosTmp < 0)
-            cosTmp = .225 * (cosTmp *-cosTmp - cosTmp) + cosTmp;
+        if (cosTmp < 0.f)
+            cosTmp = .225f * (cosTmp *-cosTmp - cosTmp) + cosTmp;
         else
-            cosTmp = .225 * (cosTmp * cosTmp - cosTmp) + cosTmp;
+            cosTmp = .225f * (cosTmp * cosTmp - cosTmp) + cosTmp;
     }
     else
     {
-        cosTmp = 1.27323954 * x - 0.405284735 * x * x;
+        cosTmp = 1.27323954f * x - 0.405284735f * x * x;
         
-        if (cosTmp < 0)
-            cosTmp = .225 * (cosTmp *-cosTmp - cosTmp) + cosTmp;
+        if (cosTmp < 0.f)
+            cosTmp = .225f * (cosTmp *-cosTmp - cosTmp) + cosTmp;
         else
-            cosTmp = .225 * (cosTmp * cosTmp - cosTmp) + cosTmp;
+            cosTmp = .225f * (cosTmp * cosTmp - cosTmp) + cosTmp;
     }
     
     *cosOut = cosTmp;
