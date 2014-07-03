@@ -32,8 +32,10 @@
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string></string>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <false/>
+    <key>UIPrerenderedIcon</key>
+    <true/>
     <key>ParseAppIDString</key>
     <string>EUl1VhYqZ2bWjkiGNUTWABoJD6eGHVUboB9taPvC</string>
     <key>ParseClientKeyString</key>
