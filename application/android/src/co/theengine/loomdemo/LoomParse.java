@@ -9,6 +9,7 @@ import android.os.Vibrator;
 import android.os.Build;
 import android.util.Log;
 import android.provider.Settings.System;
+import android.provider.Settings.Secure;
 
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
@@ -48,8 +49,14 @@ public class LoomParse
 
             ///initialize Push Notifications service
             PushService.setDefaultPushCallback(app, LoomDemo.class);
-            ParseInstallation.getCurrentInstallation().saveInBackground();
-            Log.d("LoomParse", "Completed initialization of Parse!");
+
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            //set Android ID as the UniqueID for this installation to avoid bug with re-installs
+            String androidId = Secure.getString(app.getContentResolver(), Secure.ANDROID_ID);
+            installation.put("UniqueId", androidId);
+
+            installation.saveInBackground();
+            Log.d("LoomParse", "Completed initialization of Parse. InstallationID: " + installation.getInstallationId());
             _initialized = true;
         }
     }
