@@ -96,13 +96,13 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-    if([[sourceApplication lowercaseString] isEqualToString:@"com.facebook.facebook"])
-    {
-        // handle Facebook sign in re-launching the application
-        NSLog(@"---------Facebook openURL: %@", [url absoluteString]);
-        return [FBSession.activeSession handleOpenURL:url];
-    }
-    else
+    NSBundle *mainBundle = [NSBundle mainBundle];
+
+    //Custom App URL Scheme Launch?
+    NSString *customAppScheme = [mainBundle objectForInfoDictionaryKey:@"CustomAppURLScheme"];
+    if((customAppScheme != nil) && 
+        ([customAppScheme isEqualToString:@""] == FALSE) && 
+        [[url scheme] isEqualToString:customAppScheme])
     {
         // check for query to parse and if so, do it!
         NSString *queryString = [url query];
@@ -111,6 +111,7 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
             [self application:application handleOpenURLQuery:queryString];
         }
     }
+    return YES;
 }
 
 // called when the application is opened via a Custom URL Scheme
