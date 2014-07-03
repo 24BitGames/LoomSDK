@@ -111,8 +111,24 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
             [self application:application handleOpenURLQuery:queryString];
         }
     }
+    else
+    {
+        //Facebook Scheme Launch?
+        NSString *app_id = [mainBundle objectForInfoDictionaryKey:@"FacebookAppID"];
+        if((app_id != nil) && ([app_id isEqualToString:@""] == FALSE))
+        {
+            NSString *fbScheme = [NSString stringWithFormat:@"%@%@", @"fb", app_id];
+            if([[url scheme] isEqualToString:fbScheme])
+            {
+                // handle Facebook sign in re-launching the application
+                NSLog(@"---------Facebook openURL: %@", [url absoluteString]);
+                return [FBSession.activeSession handleOpenURL:url];
+            }
+        }
+    }
     return YES;
 }
+
 
 // called when the application is opened via a Custom URL Scheme
 - (void)application:(UIApplication *)application handleOpenURLQuery:(NSString *)query
