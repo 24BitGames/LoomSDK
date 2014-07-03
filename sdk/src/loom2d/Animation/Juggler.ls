@@ -108,8 +108,11 @@ package loom2d.animation
             
             for (var i:int=mObjects.length-1; i>=0; --i)
             {
-                var tween:Tween = mObjects[i] as Tween;
-                if (tween && tween.target == target) return true;
+                if(!mObjects[i].nativeDeleted())
+                {
+                    var tween:Tween = mObjects[i] as Tween;
+                    if (tween && tween.target == target) return true;
+                }
             }
             
             return false;
