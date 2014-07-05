@@ -34,29 +34,5 @@
 	<string></string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
-    <key>CustomAppURLScheme</key>
-    <string>playdd</string>
-    <key>ParseAppIDString</key>
-    <string>EUl1VhYqZ2bWjkiGNUTWABoJD6eGHVUboB9taPvC</string>
-    <key>ParseClientKeyString</key>
-    <string>17pJDP3YV6kA0mxoS7YfEcdrrEC9kQ82iEbJ8OYT</string>
-    <key>TeakAppSecret</key>
-    <string>f33f2c9c5df4edc2b866b3dcd8e634df</string>
-    <key>FacebookAppID</key>
-    <string>145359302297405</string>
-    <key>FacebookDisplayName</key>
-    <string>Double Doodle Dev</string>
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>co.theengine.DoubleDoodle</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>playdd</string>
-                <string>fb145359302297405</string>
-            </array>
-        </dict>
-    </array>
 </dict>
 </plist>
