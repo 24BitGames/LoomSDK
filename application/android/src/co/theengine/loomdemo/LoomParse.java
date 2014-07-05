@@ -22,6 +22,10 @@ import com.parse.PushService;
  */
 public class LoomParse
 {
+    private static final String TAG = "LoomParse";
+    private static final String PARSE_APPID_KEY = "com.parse.ApplicationId";
+    private static final String PARSE_CLIENTKEY_KEY = "com.parse.ClientKey";
+
     ///vars
     private static Context     _context;
     private static boolean     _initialized = false;
@@ -32,9 +36,9 @@ public class LoomParse
     {
         _context = app;
 
-        String appID = app.getString(R.string.parseAppID);
-        String clientKey = app.getString(R.string.parseClientKey);
-        // Log.d("LoomParse", "Initialize Parse... AppID: " + appID + "  ClientKey: " + clientKey);
+        String appID = LoomDemo.getMetadataString(app, PARSE_APPID_KEY);
+        String clientKey = LoomDemo.getMetadataString(app, PARSE_CLIENTKEY_KEY);
+        // Log.d(TAG, "Initialize Parse... AppID: " + appID + "  ClientKey: " + clientKey);
 
         // if invalid strings or error on initialize, make sure to set _initialized = false
         _initialized = false;
