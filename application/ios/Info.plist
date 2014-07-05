@@ -34,8 +34,6 @@
 	<string></string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
-    <key>UIPrerenderedIcon</key>
-    <true/>
     <key>CustomAppURLScheme</key>
     <string>playdd</string>
     <key>ParseAppIDString</key>
