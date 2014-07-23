@@ -120,6 +120,7 @@ if (APPLE)
           LoomGraphics
           LoomCore
           
+          "-framework CoreText"
           "-framework CoreGraphics"
           "-framework CoreFoundation"
           "-framework CoreMotion"
@@ -156,6 +157,9 @@ if (APPLE)
 
           # Parse (NOTE: Requires FacebookSDK)
           "-framework Parse -F ${CMAKE_SOURCE_DIR}/loom/vendor/parse/ios"
+
+          # HockeyApp SDK
+          "-framework HockeySDK -F ${CMAKE_SOURCE_DIR}/loom/vendor/hockeyapp/ios"
 
           # Admob SDK
           ${CMAKE_SOURCE_DIR}/loom/vendor/admob/lib/ios/libGoogleAdMobAds.a
