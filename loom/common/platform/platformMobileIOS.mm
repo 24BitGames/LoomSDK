@@ -40,8 +40,6 @@ static OpenedViaCustomURLCallback gOpenedViaCustomURLCallback = NULL;
 BOOL gOpenedWithCustomURL = NO;
 NSMutableDictionary *gOpenUrlQueryStringDictionary = nil;
 
-NSMutableDictionary *gOpenUrlQueryStringDictionary = nil;
-
 
 
 

@@ -69,7 +69,6 @@ void Java_co_theengine_loomdemo_LoomMobile_onOpenedViaCustomURL(JNIEnv *env, job
 static loomJniMethodInfo gVibrate;
 static loomJniMethodInfo gAllowScreenSleep;
 static loomJniMethodInfo gShareText;
-static loomJniMethodInfo gGetCustomSchemeData;
 static loomJniMethodInfo gIsSensorSupported;
 static loomJniMethodInfo gDidCustomURLOpen;
 static loomJniMethodInfo gGetCustomSchemeData;
