@@ -10,6 +10,9 @@ import android.util.Log;
 import android.provider.Settings.System;
 import android.net.Uri;
 
+import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
+
+
 
 /**
  * Java Class that exposes miscellaneous Android mobile platform support
@@ -22,12 +25,14 @@ public class LoomMobile
     private static final int           VIBRATION_DURATION  = 400;  
     private static final int           VIBRATION_SLEEP     = 100;
     private static final long[]        VIBRATION_PATTERN   = { VIBRATION_DELAY, VIBRATION_DURATION, VIBRATION_SLEEP };
+    private static final String        MANIFEST_CUSTOM_URI_META_KEY = "co.theengine.loomdemo.CustomURL";
 
     ///vars
     private static Activity     _context;
     private static Vibrator     _vibrator;
     private static boolean      _canVibrate;
     private static Uri          _customURI = null;
+
 
 
     ///handles initialization of the Loom Mobile class
@@ -56,11 +61,23 @@ public class LoomMobile
         _customURI = (intent != null) ? intent.getData() : null;
         if(_customURI != null)
         {
-            String customURLScheme = LoomDemo.getMetadataString(_context, "co.theengine.loomdemo.CustomURL");
+            String customURLScheme = LoomDemo.getMetadataString(_context, MANIFEST_CUSTOM_URI_META_KEY);
             if((customURLScheme != null) && (_customURI.getScheme() != null) && !customURLScheme.equalsIgnoreCase(_customURI.getScheme()))
             {
                 //not our custom URL scheme so ignore!
                 _customURI = null;
+            }
+            else
+            {
+                //notify that we've launched via a custom URL
+                Cocos2dxGLSurfaceView.mainView.queueEvent(new Runnable() 
+                {
+                    @Override
+                    public void run() 
+                    {
+                        onOpenedViaCustomURL();
+                    }
+                });
             }
         }
     }
@@ -140,9 +157,21 @@ public class LoomMobile
     }    
 
 
+    ///returns if the application was launched via a Custom URL Scheme
+    public static boolean openedWithCustomScheme()
+    {
+        return (_customURI != null) ? true : false;
+    }    
+
+
     ///returns the data for a query of the custom scheme data string used to launch the app with, or null if not found / app wasn not launched with a custom URI scheme
     public static String getCustomSchemeQueryData(String queryKey)
     {
         return (_customURI != null) ? _customURI.getQueryParameter(queryKey) : null;
     }    
+
+
+
+    ///native delegate stubs
+    private static native void onOpenedViaCustomURL();
 }

@@ -114,14 +114,13 @@ NSLog(@"-----Info.plist HockeyAppID String: %@", hockeyAppId);
     NSString *customAppScheme = [mainBundle objectForInfoDictionaryKey:@"CustomAppURLScheme"];
     if((customAppScheme != nil) && 
         ([customAppScheme isEqualToString:@""] == FALSE) && 
-        [[url scheme] isEqualToString:customAppScheme])
+        ([[url scheme] caseInsensitiveCompare:customAppScheme] == NSOrderedSame))
     {
-        // check for query to parse and if so, do it!
-        NSString *queryString = [url query];
-        if(queryString)
-        {
-            [self application:application handleOpenURLQuery:queryString];
-        }
+        //attempt to parse the query
+        [self application:application handleOpenURLQuery:[url query]];
+        
+        //mark as being opened from a custrom URL and call our native callback
+        ios_CustomURLOpen();
     }
     else
     {

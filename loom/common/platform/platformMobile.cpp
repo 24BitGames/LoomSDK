@@ -68,7 +68,7 @@ const char *platform_getSelectedDolbyAudioProfile()
 ///Null Mobile class for all non-Mobile platforms
 
 ///initializes the data for the Mobile class for this platform
-void platform_mobileInitialize(SensorTripleChangedCallback sensorTripleChangedCB)
+void platform_mobileInitialize(SensorTripleChangedCallback sensorTripleChangedCB, OpenedViaCustomURLCallback customURLCB)
 {
 }
 
@@ -84,6 +84,12 @@ void platform_allowScreenSleep(bool sleep)
 
 ///shares the specfied text via other applications on the device (ie. Twitter, Facebook)
 bool platform_shareText(const char *subject, const char *text)
+{
+    return false;
+}
+
+///returns if the application was launched via a Custom URL Scheme
+bool platform_wasOpenedViaCustomURL()
 {
     return false;
 }

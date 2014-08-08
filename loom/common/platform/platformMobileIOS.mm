@@ -35,6 +35,10 @@ limitations under the License.
 #include "loom/vendor/jansson/jansson.h"
 
 static SensorTripleChangedCallback gTripleChangedCallback = NULL;
+static OpenedViaCustomURLCallback gOpenedViaCustomURLCallback = NULL;
+
+BOOL gOpenedWithCustomURL = NO;
+NSMutableDictionary *gOpenUrlQueryStringDictionary = nil;
 
 NSMutableDictionary *gOpenUrlQueryStringDictionary = nil;
 
@@ -46,10 +50,21 @@ static UIViewController* getParentViewController()
     return [[[UIApplication sharedApplication] keyWindow] rootViewController];
 }
 
+void ios_CustomURLOpen()
+{
+    gOpenedWithCustomURL = YES;
+    if (gOpenedViaCustomURLCallback)
+    {
+        gOpenedViaCustomURLCallback();
+    }
+}
+
+
 ///initializes the data for the Mobile class for iOS
-void platform_mobileInitialize(SensorTripleChangedCallback sensorTripleChangedCB)
+void platform_mobileInitialize(SensorTripleChangedCallback sensorTripleChangedCB, OpenedViaCustomURLCallback customURLCB)
 {
     gTripleChangedCallback = sensorTripleChangedCB;    
+    gOpenedViaCustomURLCallback = customURLCB;    
 }
 
 ///tells the device to do a short vibration, if supported by the hardware
@@ -84,12 +99,18 @@ bool platform_shareText(const char *subject, const char *text)
     return true;
 }
 
+///returns if the application was launched via a Custom URL Scheme
+bool platform_wasOpenedViaCustomURL()
+{
+    return gOpenedWithCustomURL;
+}
 
 ///gets the the specified query key data from any custom scheme URL path that the application was launched with, or "" if not found
 const char *platform_getOpenURLQueryData(const char *queryKey)
 {
     static char queryDataStatic[1024];
     const char *cString;
+    queryDataStatic[0] = '\0';
     if(queryKey && gOpenUrlQueryStringDictionary)
     {
         NSString *queryKeyString = (queryKey) ? [NSString stringWithUTF8String : queryKey] : nil;
@@ -104,13 +125,8 @@ const char *platform_getOpenURLQueryData(const char *queryKey)
             }
         }
     }
-    else
-    {
-        return "";
-    }
+    return queryDataStatic;
 }
-   
-
 
 ///checks if a given sensor is supported on this hardware
 bool platform_isSensorSupported(int sensor)

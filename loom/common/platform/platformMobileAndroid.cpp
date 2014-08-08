@@ -35,6 +35,7 @@ lmDefineLogGroup(gAndroidMobileLogGroup, "loom.mobile.android", 1, 0);
 
 
 static SensorTripleChangedCallback gTripleChangedCallback = NULL;
+static OpenedViaCustomURLCallback gOpenedViaCustomURLCallback = NULL;
 
 
 extern "C"
@@ -55,6 +56,13 @@ void Java_co_theengine_loomdemo_LoomSensors_onGravityChangedNative(JNIEnv *env, 
         gTripleChangedCallback(4, x, y, z);
     }
 }
+void Java_co_theengine_loomdemo_LoomMobile_onOpenedViaCustomURL(JNIEnv *env, jobject thiz)
+{
+    if (gOpenedViaCustomURLCallback)
+    {
+        gOpenedViaCustomURLCallback();
+    }
+}
 }
 
 
@@ -63,6 +71,8 @@ static loomJniMethodInfo gAllowScreenSleep;
 static loomJniMethodInfo gShareText;
 static loomJniMethodInfo gGetCustomSchemeData;
 static loomJniMethodInfo gIsSensorSupported;
+static loomJniMethodInfo gDidCustomURLOpen;
+static loomJniMethodInfo gGetCustomSchemeData;
 static loomJniMethodInfo gIsSensorEnabled;
 static loomJniMethodInfo gHasSensorReceivedData;
 static loomJniMethodInfo gEnableSensor;
@@ -78,11 +88,12 @@ static loomJniMethodInfo gGetSelectedDolbyAudioProfile;
 
 
 ///initializes the data for the Mobile class for Android
-void platform_mobileInitialize(SensorTripleChangedCallback sensorTripleChangedCB)
+void platform_mobileInitialize(SensorTripleChangedCallback sensorTripleChangedCB, OpenedViaCustomURLCallback customURLCB)
 {
     lmLog(gAndroidMobileLogGroup, "INIT ***** MOBILE ***** ANDROID ****");
 
     gTripleChangedCallback = sensorTripleChangedCB;    
+    gOpenedViaCustomURLCallback = customURLCB;    
 
 
     ///Bind to JNI entry points.
@@ -99,11 +110,14 @@ void platform_mobileInitialize(SensorTripleChangedCallback sensorTripleChangedCB
                                  "co/theengine/loomdemo/LoomMobile",
                                  "shareText",
                                  "(Ljava/lang/String;Ljava/lang/String;)Z");
+    LoomJni::getStaticMethodInfo(gDidCustomURLOpen,
+                                 "co/theengine/loomdemo/LoomMobile",
+                                 "openedWithCustomScheme",
+                                 "()Z");
     LoomJni::getStaticMethodInfo(gGetCustomSchemeData,
                                  "co/theengine/loomdemo/LoomMobile",
                                  "getCustomSchemeQueryData",
                                  "(Ljava/lang/String;)Ljava/lang/String;");
-
     LoomJni::getStaticMethodInfo(gIsSensorSupported,
                                  "co/theengine/loomdemo/LoomSensors",
                                  "isSensorSupported",
@@ -181,15 +195,16 @@ bool platform_shareText(const char *subject, const char *text)
     return (bool)result;
 }
 
+///returns if the application was launched via a Custom URL Scheme
+bool platform_wasOpenedViaCustomURL()
+{
+    jboolean result = gDidCustomURLOpen.getEnv()->CallStaticBooleanMethod(gDidCustomURLOpen.classID, gDidCustomURLOpen.methodID);    
+    return (bool)result;
+}
+
 ///gets the the specified query key data from any custom scheme URL path that the application was launched with, or "" if not found
 const char *platform_getOpenURLQueryData(const char *queryKey)
 {
-    //NOTE: have to re-request this JNI method info on the fly as we've had crashes on some devices when returning from Facebook login
-    LoomJni::getStaticMethodInfo(gGetCustomSchemeData,
-                                 "co/theengine/loomdemo/LoomMobile",
-                                 "getCustomSchemeQueryData",
-                                 "(Ljava/lang/String;)Ljava/lang/String;");
-
     jstring jQuery = gGetCustomSchemeData.getEnv()->NewStringUTF(queryKey);
     jstring result = (jstring)gGetCustomSchemeData.getEnv()->CallStaticObjectMethod(gGetCustomSchemeData.classID, 
                                                                                 gGetCustomSchemeData.methodID,
@@ -205,7 +220,6 @@ const char *platform_getOpenURLQueryData(const char *queryKey)
     gGetCustomSchemeData.getEnv()->DeleteLocalRef(jQuery);
     return queryData->m_sString.c_str();
 }
-
 
 ///checks if a given sensor is supported on this hardware
 bool platform_isSensorSupported(int sensor)
