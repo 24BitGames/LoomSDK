@@ -42,6 +42,7 @@ int platform_getStatus();
 bool platform_postAchievement(const char *achievementId);
 bool platform_postHighScore(int score);
 bool platform_postAction(const char *actionId, const char *objectInstanceId);
+bool platform_postActionWithProperties(const char *actionId, const char *objectInstanceId, const char *jsonProperties);
 
 
 
