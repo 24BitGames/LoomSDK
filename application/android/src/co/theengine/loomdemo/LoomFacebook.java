@@ -233,7 +233,8 @@ public class LoomFacebook
     				Bundle params = new Bundle();
     				params.putString("title", title);
     				params.putString("message", message);
-    				
+    				params.putString("to", recipients);
+					
     		        WebDialog.OnCompleteListener listener = new WebDialog.OnCompleteListener() 
                     {
     		            @Override
