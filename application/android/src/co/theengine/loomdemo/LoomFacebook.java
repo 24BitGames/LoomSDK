@@ -234,6 +234,7 @@ public class LoomFacebook
     				params.putString("title", title);
     				params.putString("message", message);
     				params.putString("to", recipients);
+                    params.putString("frictionless", "1");
 					
     		        WebDialog.OnCompleteListener listener = new WebDialog.OnCompleteListener() 
                     {
