@@ -33,7 +33,7 @@ end
 $doBuildJIT=1
 
 # Whether or not to include Admob in the build... for Great Apple Compliance!
-$doBuildAdmob=1
+$doBuildAdmob=0
 
 # Allow disabling Loom doc generation, as it can be very slow.
 # Disabled by default, set environment variable 'LOOM_BUILD_DOCS'
