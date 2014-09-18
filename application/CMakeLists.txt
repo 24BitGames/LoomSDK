@@ -15,7 +15,6 @@ set (APPLICATION_SRC
 
 set (APPLICATION_HDR
     common/AppDelegate.h
-    common/catmullRom.h
 )
 
 if (MSVC)
@@ -111,11 +110,23 @@ if (APPLE)
 
     if (LOOM_BUILD_IOS EQUAL 1)
 
-        # Allow Admob to be included for iOS?
+        # Allow Admob and/or Facebook to be included for iOS?
         if (LOOM_BUILD_ADMOB EQUAL 1)
             target_link_libraries(${PROJECT_NAME} 
                 "-framework AdSupport"
                 ${CMAKE_SOURCE_DIR}/loom/vendor/admob/lib/ios/libGoogleAdMobAds.a
+            )
+        endif()
+        if (LOOM_BUILD_FACEBOOK EQUAL 1)
+            target_link_libraries(${PROJECT_NAME} 
+                # Facebook
+                "-framework FacebookSDK -F ${CMAKE_SOURCE_DIR}/loom/vendor/facebook/ios"
+
+                # Teak (NOTE: Requires FacebookSDK)
+                "-framework Carrot -F ${CMAKE_SOURCE_DIR}/loom/vendor/teak/ios"
+
+                # Parse (NOTE: Requires FacebookSDK)
+                "-framework Parse -F ${CMAKE_SOURCE_DIR}/loom/vendor/parse/ios"
             )
         endif()
 
@@ -128,7 +139,6 @@ if (APPLE)
           LoomGraphics
           LoomCore
           
-          "-framework CoreText"
           "-framework CoreGraphics"
           "-framework CoreFoundation"
           "-framework CoreMotion"
@@ -154,23 +164,9 @@ if (APPLE)
           "-framework AudioToolbox"
           "-framework CoreAudio"
 
-          # Custom Vendors
-
-          # Facebook
-          "-framework FacebookSDK -F ${CMAKE_SOURCE_DIR}/loom/vendor/facebook/ios"
-
-          # Teak (NOTE: Requires FacebookSDK)
-          "-framework Carrot -F ${CMAKE_SOURCE_DIR}/loom/vendor/teak/ios"
-
-          # Parse (NOTE: Requires FacebookSDK)
-          "-framework Parse -F ${CMAKE_SOURCE_DIR}/loom/vendor/parse/ios"
-
-          # HockeyApp SDK
-          "-framework HockeySDK -F ${CMAKE_SOURCE_DIR}/loom/vendor/hockeyapp/ios"
-
           "-ObjC"
           "-lc++"
-        )
+          )
 
 
         #iPhone app bundle

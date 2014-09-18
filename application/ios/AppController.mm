@@ -27,7 +27,6 @@
 #import "cocos2d.h"
 #import "EAGLView.h"
 #import "../common/AppDelegate.h"
- #import "HockeySDK.h"
 
 #import "RootViewController.h"
 #import "FBAppCall.h"
@@ -67,17 +66,6 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
     viewController.wantsFullScreenLayout = YES;
     viewController.view = glView;
    
-    // check for and initialize HockeyApp
-    NSBundle *mainBundle = [NSBundle mainBundle];
-    NSString *hockeyAppId = [mainBundle objectForInfoDictionaryKey:@"HockeyAppID"];
-NSLog(@"-----Info.plist HockeyAppID String: %@", hockeyAppId);
-    if((hockeyAppId != nil) && ([hockeyAppId isEqualToString:@""] == FALSE))
-    {
-        [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:hockeyAppId];
-        [[BITHockeyManager sharedHockeyManager] startManager];
-        [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation];   
-    }
-
     // Enable multitouch.
     [glView setMultipleTouchEnabled:YES];
 
@@ -98,9 +86,11 @@ NSLog(@"-----Info.plist HockeyAppID String: %@", hockeyAppId);
     [[UIApplication sharedApplication] setStatusBarHidden: YES];
     
     // Parse setup for Push Notifications
+    parse = nil;
+#if LOOM_ALLOW_FACEBOOK
     parse = [[ParseAPIiOS alloc] init];
     [parse initialize];
-
+#endif
     cocos2d::CCApplication::sharedApplication().run();
     
     return YES;
@@ -124,6 +114,7 @@ NSLog(@"-----Info.plist HockeyAppID String: %@", hockeyAppId);
     }
     else
     {
+#if LOOM_ALLOW_FACEBOOK
         //Facebook Scheme Launch?
         NSString *app_id = [mainBundle objectForInfoDictionaryKey:@"FacebookAppID"];
         if((app_id != nil) && ([app_id isEqualToString:@""] == FALSE))
@@ -136,6 +127,7 @@ NSLog(@"-----Info.plist HockeyAppID String: %@", hockeyAppId);
                 return [FBSession.activeSession handleOpenURL:url];
             }
         }
+#endif
     }
     return YES;
 }
@@ -180,7 +172,7 @@ NSLog(@"-----Info.plist HockeyAppID String: %@", hockeyAppId);
      */
     cocos2d::CCDirector::sharedDirector()->resume();
 
-
+#if LOOM_ALLOW_FACEBOOK
     // Handle the user leaving the app while the Facebook login dialog is being shown
     // For example: when the user presses the iOS "home" button while the login dialog is active
     NSBundle *mainBundle = [NSBundle mainBundle];
@@ -190,6 +182,7 @@ NSLog(@"-----Info.plist HockeyAppID String: %@", hockeyAppId);
         NSLog(@"---------Application Did Become Active: Notifying Facebook");
         [FBAppCall handleDidBecomeActive];    
     }
+#endif
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
