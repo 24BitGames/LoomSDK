@@ -96,7 +96,8 @@ loom/vendor/facebook/android/local.properties
 #docs stuff
 s3_docs
 loom/vendor/luajit/libluajit64.a
-
 loom/vendor/luajit/libluajit32.a
+loom/vendor/facebook/android/bin/
 output
+
 *.sublime-workspace
