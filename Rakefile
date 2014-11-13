@@ -11,7 +11,7 @@ puts "== Executing as '#{ENV['USER']}' =="
 $buildTarget="Release" # "Debug"
 
 # the sdk_version name that will be generated when this sdk is deployed (default = "dev")
-$targetSDKVersion = "dd_v1.0.3"
+$targetSDKVersion = "dd_v1.0.5"
 
 # What version of the android SDK are going to target? Note you also need to
 # update the Android project and manifest to match.
