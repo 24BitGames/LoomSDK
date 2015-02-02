@@ -63,7 +63,8 @@ static UIViewController* getParentViewController()
 
 @property (nonatomic, retain) MPMoviePlayerController*  videoPlayer; 
 @property (nonatomic, retain) NSURL*                    videoUrl;    
-@property (nonatomic, retain) id                        becameActiveObserver;    
+@property (nonatomic, retain) id                        becameActiveObserver;
+@property (nonatomic, readwrite) BOOL                   isReadyForDisplay;
 
 @end
 
@@ -90,7 +91,8 @@ static UIViewController* getParentViewController()
 {
     [super viewDidLoad];
     
-    self.title = @"MPMoviePlayerController";    
+    self.title = @"MPMoviePlayerController"; 
+    self.isReadyForDisplay = NO;   
 
     self.videoPlayer = [[[MPMoviePlayerController alloc] initWithContentURL:self.videoUrl] autorelease];
     self.videoPlayer.controlStyle             = (gControlMode == ControlMode_Show) ? MPMovieControlStyleFullscreen : MPMovieControlStyleNone;
@@ -101,6 +103,12 @@ static UIViewController* getParentViewController()
 
     self.videoPlayer.backgroundView.backgroundColor = UIColorFromRGB(gBackgroundColor);
 
+    [[NSNotificationCenter defaultCenter] addObserver:self 
+                                            selector:@selector(videoReadyForDisplay:) 
+                                            name:MPMoviePlayerReadyForDisplayDidChangeNotification 
+                                            object:self.videoPlayer];
+
+    //add observer for when the movie has finished playback
     [[NSNotificationCenter defaultCenter] addObserver:self      
                                           selector:@selector(videoFinished:)
                                           name:MPMoviePlayerPlaybackDidFinishNotification
@@ -142,7 +150,7 @@ static UIViewController* getParentViewController()
 - (void)touchPlayer:(UITapGestureRecognizer *)gesture
 {
     //don't allow touching to stop playback unless the video is ready to play and is actually playing
-    if((self.videoPlayer.readyForDisplay == YES) &&
+    if((self.isReadyForDisplay == YES) &&
         (self.videoPlayer.playbackState == MPMoviePlaybackStatePlaying))
     {
         [self.videoPlayer stop];
@@ -152,9 +160,8 @@ static UIViewController* getParentViewController()
 - (void)viewDidUnload
 {
     [self.videoPlayer stop];
-
     self.videoPlayer = nil;
-    self.videoUrl    = nil;
+    self.videoUrl = nil;
 
     [super viewDidUnload];
 }
@@ -163,7 +170,17 @@ static UIViewController* getParentViewController()
 {
     [super viewWillAppear:animated];
     
-    [self setWantsFullScreenLayout:YES];
+    if ([[UIDevice currentDevice].systemVersion floatValue] < 7.0)
+    {
+        [self setWantsFullScreenLayout:YES];
+    }
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+    else
+    {
+        self.edgesForExtendedLayout = UIRectEdgeAll;
+        self.extendedLayoutIncludesOpaqueBars = YES;
+    }
+#endif 
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -171,8 +188,26 @@ static UIViewController* getParentViewController()
     [super viewWillDisappear:animated];
 }
 
+- (void) videoReadyForDisplay:(NSNotification*)notification 
+{
+    self.isReadyForDisplay = YES;
+}
+
 - (void) videoFinished:(NSNotification*)notification 
 {
+    //remove ready for display observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                            name:MPMoviePlayerReadyForDisplayDidChangeNotification
+                                            object:self.videoPlayer];
+    //remove finish playback observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                            name:MPMoviePlayerPlaybackDidFinishNotification
+                                            object:self.videoPlayer];
+    //remove active observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self.becameActiveObserver
+                                            name:UIApplicationDidBecomeActiveNotification
+                                            object:[UIApplication sharedApplication]];
+
     int reason = [[[notification userInfo] valueForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey] intValue];
     if (reason == MPMovieFinishReasonPlaybackEnded || reason == MPMovieFinishReasonUserExited)  
     {
@@ -185,11 +220,54 @@ static UIViewController* getParentViewController()
         gEventCallback("fail", "");
     }
 
-    //remove active observer
-    [[NSNotificationCenter defaultCenter] removeObserver:self.becameActiveObserver];
-
+    //remove from the superview
+    self.isReadyForDisplay = NO;
+    [self.videoPlayer stop];    
+    [self.videoPlayer setFullscreen:NO animated:YES];
+    self.videoPlayer.view.frame = CGRectMake(0, 0, 0, 0);    
+    [self.videoPlayer.view removeFromSuperview];
     [self dismissViewControllerAnimated:NO completion:nil];
 }
+
+
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+
+- (BOOL)shouldAutorotate;
+{
+    return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    if ([getParentViewController() respondsToSelector:@selector(supportedInterfaceOrientations)])
+    {
+        return [getParentViewController() supportedInterfaceOrientations];
+    }
+    else
+    {
+        return [super supportedInterfaceOrientations];
+    }
+}
+
+#endif
+
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+
+//iOS 8 SDK and up uses this now
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
+    if ([getParentViewController() respondsToSelector:@selector(viewWillTransitionToSize)])
+    {
+        return [getParentViewController() viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    }
+    else
+    {
+        return [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    }
+}
+
+#endif
 
 @end
 

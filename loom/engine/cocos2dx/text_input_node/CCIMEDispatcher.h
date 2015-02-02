@@ -119,8 +119,8 @@ public:
     LOOM_DELEGATE(KeyboardWillHide);
     LOOM_DELEGATE(KeyboardDidHide);
 
-    bool     _canAttachWithIME;
     bool     _canDetachWithIME;
+    bool     _canAttachWithIME;
     utString contentText;
 
     CCLoomScriptIMEDelegate()

@@ -303,7 +303,7 @@ static EAGLView *view = 0;
     //    -> context_ MUST be the OpenGL context
     //    -> renderbuffer_ must be the the RENDER BUFFER
 
-#ifdef __IPHONE_4_0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
     
     if (multiSampling_)
     {
@@ -340,7 +340,7 @@ static EAGLView *view = 0;
         }
     }
     
-#endif // __IPHONE_4_0
+#endif
     
      if(![context_ presentRenderbuffer:GL_RENDERBUFFER])
         {

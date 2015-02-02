@@ -63,7 +63,17 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
     
     // Use RootViewController manage EAGLView 
     viewController = [[RootViewController alloc] initWithNibName:nil bundle:nil];
-    viewController.wantsFullScreenLayout = YES;
+    if ( [[UIDevice currentDevice].systemVersion floatValue] < 7.0)
+    {
+        viewController.wantsFullScreenLayout = YES;
+    }
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+    else
+    {
+        viewController.edgesForExtendedLayout = UIRectEdgeAll;
+        viewController.extendedLayoutIncludesOpaqueBars = YES;
+    }
+#endif
     viewController.view = glView;
    
     // Enable multitouch.
@@ -75,12 +85,14 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
         // warning: addSubView doesn't work on iOS6
         [window addSubview: viewController.view];
     }
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
     else
     {
         // use this method on ios6
         [window setRootViewController:viewController];
     }
-    
+#endif
+
     [window makeKeyAndVisible];
 
     [[UIApplication sharedApplication] setStatusBarHidden: YES];
@@ -344,8 +356,6 @@ static void handleGenericEvent(void *userData, const char *type, const char *pay
             [library release];
         }
     }
-
-    return 0;
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info

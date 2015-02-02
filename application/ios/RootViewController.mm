@@ -64,18 +64,28 @@
         return TRUE;
 }
 
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
+
 // For ios6, use supportedInterfaceOrientations & shouldAutorotate instead
 - (NSUInteger) supportedInterfaceOrientations{
-#ifdef __IPHONE_6_0
     if(CCLoomCocos2d::getDisplayOrientation() == CCLoomCocos2d::OrientationLandscape)
         return UIInterfaceOrientationMaskLandscape;
     else if(CCLoomCocos2d::getDisplayOrientation() == CCLoomCocos2d::OrientationPortrait)
         return UIInterfaceOrientationMaskPortrait;
     else //auto-orientation
         return UIInterfaceOrientationMaskAll;
-#endif    
 }
 
+- (BOOL) shouldAutorotate {
+    return YES;
+}
+
+#endif
+
+
+
+//Depricated in iOS 8 SDK
 -(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
     if(UIInterfaceOrientationIsLandscape(toInterfaceOrientation))
         CCLoomCocos2d::setOrientation(CCLoomCocos2d::OrientationLandscape);
@@ -83,9 +93,32 @@
         CCLoomCocos2d::setOrientation(CCLoomCocos2d::OrientationPortrait);
 }
 
-- (BOOL) shouldAutorotate {
-    return TRUE;
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+
+//iOS 8 SDK and up uses this now
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    //The device has already rotated, that's why this method is being called.
+    UIInterfaceOrientation toInterfaceOrientation   = [[UIDevice currentDevice] orientation];
+    
+    //fixes orientation mismatch (between UIDeviceOrientation and UIInterfaceOrientation)
+    if(toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
+    {
+        toInterfaceOrientation = UIInterfaceOrientationLandscapeLeft;
+    }
+    else if(toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft)
+    {
+        toInterfaceOrientation = UIInterfaceOrientationLandscapeRight;
+    }
+
+    //call deprecated iOS function to handle our cocos stuff!
+    [self willRotateToInterfaceOrientation:toInterfaceOrientation duration:0.0];
 }
+
+#endif
+
 
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
