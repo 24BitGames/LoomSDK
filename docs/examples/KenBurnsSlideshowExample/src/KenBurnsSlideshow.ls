@@ -34,8 +34,9 @@ package
                                         15, 5,          //num images in the sequence, num images loaded in memory at once
                                         ".jpg", 
                                         5, 0.3, 0.6,    //slide duration, fade in time, fade out time
-                                        0.35, 1.2, 0.9,  //max move %, max zoom in %, max zoom out %
-                                        true);
+                                        0.35, 0.7,     //max move %, weight for zoomIn vs. zoomOut, 
+                                        1.15, 0.85,       //max zoom in %, max zoom out %
+                                        true);          //auto-play
 			stage.addChild(slideShow);
         }
     }

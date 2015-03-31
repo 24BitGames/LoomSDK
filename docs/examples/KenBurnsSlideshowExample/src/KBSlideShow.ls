@@ -43,6 +43,7 @@ package
                                     slideFadeInTime:Number = 0.5,
                                     slideFadeOutTime:Number = 0.1,
                                     slideMaxDist:Number = 1.0,
+                                    slideZoomInWeight:Number = 0.5,
                                     slideZoomIn:Number = 2.0,
                                     slideZoomOut:Number = 0.5,
                                     startOnAdd:Boolean = true)
@@ -67,6 +68,7 @@ package
                                                 slideFadeInTime, 
                                                 slideFadeOutTime, 
                                                 slideMaxDist, 
+                                                slideZoomInWeight,
                                                 slideZoomIn, 
                                                 slideZoomOut);
 			}
@@ -147,7 +149,6 @@ package
             var newSlideIndex:int = (currentSlideIndex + 1) % totalImageNumber;
             var newSlideTex:String = slideIndexToKey(newSlideIndex);
             var newSlide:KBSlide = slides[newSlideTex];
-trace("---new slide: " + newSlideIndex);                    
 
             //handle buffering if we have enough of a buffer to work with
             if(totalImageNumber > 3)
@@ -157,7 +158,6 @@ trace("---new slide: " + newSlideIndex);
                 var deadSlide:KBSlide = slides[slideIndexToKey(deadSlideIndex)];
                 if (deadSlide.LoadedInMemory) 
                 {
-trace("---kill slide: " + deadSlideIndex);                    
                     deadSlide.texture.dispose();
                     deadSlide.LoadedInMemory = false;
                     removeChild(deadSlide, false);
@@ -169,7 +169,6 @@ trace("---kill slide: " + deadSlideIndex);
                 var bufferSlide:KBSlide = slides[bufferSlideTex];
                 if (!bufferSlide.LoadedInMemory) 
                 {
-trace("---buffer slide: " + bufferSlideIndex);                    
                     Texture.fromAssetAsync(bufferSlideTex, onTextureLoaded, false); 
                 }
             }

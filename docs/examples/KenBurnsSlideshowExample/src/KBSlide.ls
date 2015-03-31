@@ -23,8 +23,6 @@ package
         SouthEast, 
         SouthWest, 
         NorthWest, 
-        ZoomIn, 
-        ZoomOut,
         NumEffects
     }
 
@@ -38,6 +36,7 @@ package
 		private var _fadeInTime:Number = 0.5;
 		private var _fadeOutTime:Number = 0.2;		
         private var _maxSlideAmount:Number = 1.0;
+        private var _zoomInWeight:Number = -1.0;
         private var _maxZoomIn:Number = 2.0;
         private var _maxZoomOut:Number = 0.5;
         private var _maxSlideX:Number = 0.0;
@@ -61,6 +60,7 @@ package
                                 fadeIn:Number = 0.5, 
                                 fadeOut:Number = 0.1,
                                 maxDistance:Number = 50,
+                                zoomInWeight:Number = 0.5,
                                 maxZoomIn:Number = 2.0,
                                 maxZoomOut:Number = 0.5)
 		{
@@ -74,6 +74,7 @@ package
 			_fadeInTime = fadeIn;
 			_fadeOutTime = fadeOut;
             _maxSlideAmount = maxDistance;
+            _zoomInWeight = zoomInWeight;
             _maxZoomIn = maxZoomIn;
             _maxZoomOut = maxZoomOut;            
 		}
@@ -168,14 +169,13 @@ package
                     targetX = x - _maxSlideX;
                     targetY = y + _maxSlideY;
                     break;
-				case KBSlideEffect.ZoomIn:
-					targetScale = _maxZoomIn;
-					break;
-				case KBSlideEffect.ZoomOut:
-					targetScale = _maxZoomOut;
-					break;
-                    default:
 			}			
+
+            //add zoom based on the weight (<.0.0 weight means don't scale at all)
+            if(_zoomInWeight >= 0.0)
+            {
+                targetScale = (Random.rand() < _zoomInWeight) ? _maxZoomIn : _maxZoomOut;
+            }
 
             //add the slide effect tween
             effectTween.moveTo(targetX, targetY);
