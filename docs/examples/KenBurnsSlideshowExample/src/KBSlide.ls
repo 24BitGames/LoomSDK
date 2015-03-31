@@ -34,9 +34,10 @@ package
 	{
         private var _width:int;
         private var _height:int;
-		private var _easeInTime = 2;
-		private var _easeOutTime = 1;		
-        private var _maxSlideAmount = 1.0;
+        private var _duration:Number = 5.0;
+		private var _fadeInTime:Number = 0.5;
+		private var _fadeOutTime:Number = 0.2;		
+        private var _maxSlideAmount:Number = 1.0;
         private var _maxZoomIn:Number = 2.0;
         private var _maxZoomOut:Number = 0.5;
         private var _maxSlideX:Number = 0.0;
@@ -56,8 +57,9 @@ package
         //constructor
 		public function KBSlide(slideWidth:int,
                                 slideHeight:int,
-                                easeIn:Number = 2, 
-                                easeOut:Number = 0.2,
+                                life:Number = 5.0, 
+                                fadeIn:Number = 0.5, 
+                                fadeOut:Number = 0.1,
                                 maxDistance:Number = 50,
                                 maxZoomIn:Number = 2.0,
                                 maxZoomOut:Number = 0.5)
@@ -68,8 +70,9 @@ package
             _height = slideHeight;
 
             LoadedInMemory = false;
-			_easeInTime = easeIn;
-			_easeOutTime = easeOut;
+            _duration = life;
+			_fadeInTime = fadeIn;
+			_fadeOutTime = fadeOut;
             _maxSlideAmount = maxDistance;
             _maxZoomIn = maxZoomIn;
             _maxZoomOut = maxZoomOut;            
@@ -122,68 +125,74 @@ package
 		
 
         //start easing in the slide
-		public function easeIn(effect:KBSlideEffect):Tween
+		public function startEffect(effect:KBSlideEffect):Tween
 		{
-			var tween:Tween = new Tween(this, _easeInTime, Transitions.EASE_OUT);
+			var effectTween:Tween = new Tween(this, _duration, Transitions.LINEAR);
 			
             //reset position & scale
             x = _startingPosition.x;
             y = _startingPosition.y;
             scale = 1.0;
 
+            //figure out our effect tween target(s)
+            var targetX:Number = x;
+            var targetY:Number = y;
+            var targetScale:Number = scale;
 			switch (effect)
 			{
 				case KBSlideEffect.North:
-					tween.moveTo(x, y + _maxSlideY);
+                    targetY = y + _maxSlideY;
 					break;
 				case KBSlideEffect.South:
-					tween.moveTo(x, y - _maxSlideY);
+					targetY = y - _maxSlideY;
 					break;
                 case KBSlideEffect.East:
-                    tween.moveTo(x - _maxSlideX, y);
+                    targetX = x - _maxSlideX;
                     break;
 				case KBSlideEffect.West:
-					tween.moveTo(x + _maxSlideX, y);
+					targetX = x + _maxSlideX;
 					break;
                 case KBSlideEffect.NorthEast:
-                    tween.moveTo(x + _maxSlideX, y + _maxSlideY);
+                    targetX = x + _maxSlideX;
+                    targetY = y + _maxSlideY;
                     break;
                 case KBSlideEffect.SouthEast:
-                    tween.moveTo(x - _maxSlideX, y - _maxSlideY);
+                    targetX = x - _maxSlideX;
+                    targetY = y - _maxSlideY;
                     break;
 				case KBSlideEffect.SouthWest:
-					tween.moveTo(x + _maxSlideX, y - _maxSlideY);
+					targetX = x + _maxSlideX;
+                    targetY = y - _maxSlideY;
 					break;
                 case KBSlideEffect.NorthWest:
-                    tween.moveTo(x - _maxSlideX, y + _maxSlideY);
+                    targetX = x - _maxSlideX;
+                    targetY = y + _maxSlideY;
                     break;
 				case KBSlideEffect.ZoomIn:
-					tween.scaleTo(_maxZoomIn);
+					targetScale = _maxZoomIn;
 					break;
 				case KBSlideEffect.ZoomOut:
-					tween.scaleTo(_maxZoomOut);
+					targetScale = _maxZoomOut;
 					break;
                     default:
-			}
-			
-			tween.fadeTo(1.0);
-			Loom2D.juggler.add(tween);	
-            return tween;
-		}
-		 		
+			}			
 
-        //start easing out the slide
-		public function easeOut():Tween
-		{
-            //kill any existing tweens on us
-            Loom2D.juggler.removeTweens(this);
+            //add the slide effect tween
+            effectTween.moveTo(targetX, targetY);
+            effectTween.scaleTo(targetScale);
+			Loom2D.juggler.add(effectTween);	
 
-            ///tween out!
-			var tween:Tween = new Tween(this, _easeOutTime, Transitions.EASE_OUT);
-			tween.fadeTo(0.0);
-			Loom2D.juggler.add(tween);	
+            //prep the fade out tween now and set it to fire at the end of the movement effect tween
+            var outTween:Tween = new Tween(this, _fadeOutTime, Transitions.LINEAR);
+            outTween.fadeTo(0.0);
+            effectTween.nextTween = outTween;
 
-            return tween;
-		}      
+            //add separate tween for the fade in
+            var inTween:Tween = new Tween(this, _fadeInTime, Transitions.LINEAR);
+            inTween.fadeTo(1.0);
+            Loom2D.juggler.add(inTween);  
+
+            return effectTween;
+		}    
 	}
 }

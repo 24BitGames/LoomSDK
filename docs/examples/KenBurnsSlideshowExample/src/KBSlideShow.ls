@@ -28,8 +28,6 @@ package
         private var _startOnAdd:Boolean = false;
 		
 		// A flag signaling that we're waiting for a new slide texture to load from memory before we can transition to the next slide
-        private var slideLoadRequested:Boolean;
-		private var nextSlideEffect:KBSlideEffect;
         private var previousSlideEffect:KBSlideEffect = KBSlideEffect.NumEffects;
 		private var slides:Dictionary.<String, KBSlide>;
 
@@ -39,10 +37,11 @@ package
                                     slideWidth:int,
                                     slideHeight:int,
                                     totalImageCount:Number, 
-                                    imageBufferLength:Number = 0, 
+                                    imageBufferLength:Number = 3, 
                                     imageExtension:String = ".jpg",
-                                    slideInTime:Number = 2.0,
-                                    slideOutTime:Number = 0.2,
+                                    slideDuration:Number = 5.0,
+                                    slideFadeInTime:Number = 0.5,
+                                    slideFadeOutTime:Number = 0.1,
                                     slideMaxDist:Number = 1.0,
                                     slideZoomIn:Number = 2.0,
                                     slideZoomOut:Number = 0.5,
@@ -52,8 +51,9 @@ package
 			totalImageNumber = totalImageCount;
             _startOnAdd = startOnAdd;
 			
-			// <= 0 means load all of the images
+			// <= 0 means load all of the images (clamp to min of 3 ortotalImageCount)
 			imageBufferSize = (imageBufferLength <= 0) ? totalImageCount : imageBufferLength;
+            imageBufferSize = Math.max(imageBufferSize, Math.min(totalImageCount, 3));
 			currentImagePrefix = imagePrefix;
 			currentImageExtension = imageExtension;
 			
@@ -63,8 +63,9 @@ package
                 var slideName:String = getSliderName(imagePrefix, imageExtension, i);
 				slides[slideName] = new KBSlide(slideWidth,
                                                 slideHeight,
-                                                slideInTime, 
-                                                slideOutTime, 
+                                                slideDuration, 
+                                                slideFadeInTime, 
+                                                slideFadeOutTime, 
                                                 slideMaxDist, 
                                                 slideZoomIn, 
                                                 slideZoomOut);
@@ -121,18 +122,12 @@ package
 		
 
         //callback that handles initializing the slide once its texture has completed loading
-		private function onTextureLoaded(p0:Texture):void
+		private function onTextureLoaded(tex:Texture):void
 		{
-			// Slide was sucessfully loaded
-            slides[p0.assetPath].initialize(p0, this);
-			
-			if (slideLoadRequested)
-			{
-				slideLoadRequested = false;
-				nextSlide(nextSlideEffect);
-			}
+			// texture for the slide was sucessfully loaded
+            slides[tex.assetPath].initialize(tex, this);
 		}
-		
+
 
         //request transition to the next slide
 		public function nextSlide(effect:KBSlideEffect)
@@ -148,42 +143,40 @@ package
             }
             previousSlideEffect = effect;
 
-			// First check if the next slide is loaded, if it isn't, request it
+            //get our new slide
             var newSlideIndex:int = (currentSlideIndex + 1) % totalImageNumber;
             var newSlideTex:String = slideIndexToKey(newSlideIndex);
             var newSlide:KBSlide = slides[newSlideTex];
-			if (!newSlide.LoadedInMemory) 
-			{
-				slideLoadRequested = true;
-                nextSlideEffect = effect;
-				
-				// Load the requested slide into memory
-				Texture.fromAssetAsync(newSlideTex, onTextureLoaded, false); 
+trace("---new slide: " + newSlideIndex);                    
 
-				// Unload the slide at the back of the loading queue, but only if we're not going to wrap around
-				// i.e we have slides 0, 1, 2. We've loaded 0 and 1. Now want to load 2, we load it. BUT the next slide after 2 is 0
-				// which means we want to unload 2 and load 0! No Bueno
-                var deadSlideIndex:int = ((currentSlideIndex + 1) - imageBufferSize) % totalImageNumber;
-				if (newSlideIndex != deadSlideIndex)
-				{
-                    var deadSlide:KBSlide = slides[slideIndexToKey(deadSlideIndex)];
-					deadSlide.texture.dispose();
-					deadSlide.LoadedInMemory = false;
-                    removeChild(deadSlide, false);
-				}
-				
-				// Early exit from this function. When the texture load completes, this function will be called again, except with isLoadedInMemory set to true
-				return;
-			}
-			
-            if(currentSlideIndex >= 0)
+            //handle buffering if we have enough of a buffer to work with
+            if(totalImageNumber > 3)
             {
-                slides[slideIndexToKey(currentSlideIndex)].easeOut();
+                //unload the previous slide
+                var deadSlideIndex:int = (currentSlideIndex - 1) % totalImageNumber;
+                var deadSlide:KBSlide = slides[slideIndexToKey(deadSlideIndex)];
+                if (deadSlide.LoadedInMemory) 
+                {
+trace("---kill slide: " + deadSlideIndex);                    
+                    deadSlide.texture.dispose();
+                    deadSlide.LoadedInMemory = false;
+                    removeChild(deadSlide, false);
+                }
+
+                //pre-load another slide at the end of the buffer if necessary
+                var bufferSlideIndex:int = (currentSlideIndex - 1 + imageBufferSize) % totalImageNumber;
+                var bufferSlideTex:String = slideIndexToKey(bufferSlideIndex);
+                var bufferSlide:KBSlide = slides[bufferSlideTex];
+                if (!bufferSlide.LoadedInMemory) 
+                {
+trace("---buffer slide: " + bufferSlideIndex);                    
+                    Texture.fromAssetAsync(bufferSlideTex, onTextureLoaded, false); 
+                }
             }
-			
-			// Make the slider index point to the next slide and wrap it around the max index
+
+			//start showing the next slide
 			currentSlideIndex = (currentSlideIndex + 1) % totalImageNumber;			
-			var tweenIn:Tween = slides[slideIndexToKey(currentSlideIndex)].easeIn(effect);	
+			var tweenIn:Tween = slides[slideIndexToKey(currentSlideIndex)].startEffect(effect);	
 
             //when we complete this tween, go to the next slide automatically!
             tweenIn.onComplete = nextSlide;

@@ -31,9 +31,10 @@ package
 			slideShow = new KBSlideShow("assets/slideshow1/lobby_", 
                                         slideWidth, 
                                         slideHeight, 
-                                        15, 3, 
+                                        15, 5,          //num images in the sequence, num images loaded in memory at once
                                         ".jpg", 
-                                        4, 2, 1.0, 2.0, 0.5,
+                                        5, 0.3, 0.6,    //slide duration, fade in time, fade out time
+                                        0.35, 1.2, 0.9,  //max move %, max zoom in %, max zoom out %
                                         true);
 			stage.addChild(slideShow);
         }
